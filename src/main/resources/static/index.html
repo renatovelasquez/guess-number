@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="">
+<head>
+    <title>Guess Number Game</title>
+</head>
+<body>
+<h1>WebSocket Game</h1>
+<button onclick="connect()">Connect</button>
+<button onclick="disconnect()">Disconnect</button>
+<br>
+<label for="nickname">Nickname:</label>
+<input type="text" id="nickname" name="nickname">
+<br>
+<label for="number">Number (1-10):</label>
+<input type="number" id="number" name="number" min="1" max="10">
+<br>
+<label for="amount">Bet Amount:</label>
+<input type="number" id="amount" name="amount" step="0.01">
+<br>
+<button onclick="placeBet()">Place Bet</button>
+<pre id="messages"></pre>
+
+<script>
+    var ws;
+
+    function connect() {
+        ws = new WebSocket('ws://localhost:8080/game');
+        ws.onmessage = function (event) {
+            var messages = document.getElementById('messages');
+            messages.textContent += event.data + '\n';
+        };
+    }
+
+    function disconnect() {
+        if (ws) {
+            ws.close();
+        }
+    }
+
+    function placeBet() {
+        var nickname = document.getElementById('nickname').value;
+        var number = document.getElementById('number').value;
+        var amount = document.getElementById('amount').value;
+        var bet = {
+            nickname: nickname,
+            number: parseInt(number),
+            amount: parseFloat(amount)
+        };
+        ws.send(JSON.stringify(bet));
+    }
+</script>
+</body>
+</html>
